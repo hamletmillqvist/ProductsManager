@@ -1,0 +1,8 @@
+{
+  "watch": [
+    "src",
+    "www"
+  ],
+  "ext": "ts,tsx,html,json,scss",
+  "exec": "concurrently 'npm run compile' 'npm run build:client' 'tsx src/Server/Server.tsx'"
+}
