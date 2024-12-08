@@ -8,7 +8,6 @@ import NotFoundError from "../Shared/Errors/NotFoundError";
 import ControllerBase from "@controllers/ControllerBase";
 import {HttpMethod} from "@shared/HttpMethod";
 import "@shared/Extentions/ArrayExtentions"
-import {redirect} from "react-router-dom";
 
 function registerApiRoute(router: Router, func: Function) {
     // @ts-ignore
@@ -88,20 +87,10 @@ const ConfigureRoutes = (app: Express) => {
     });
 
     app.use((request: Request, response: Response) => {
-        const requestInfo = {
-            url: request.url,
-            body: request.body,
-            accepts: request.accepts(),
-            params: request.params,
-            query: request.query,
-        };
-
-        console.log(`Request from ${request.ip} ${JSON.stringify(requestInfo)}`);
-
         // Since we've already passed through the static-middleware, we KNOW that the file is not in /www/
         // Therefore, we navigate to the index.html file and interpret the requests as a path in the Spa react router
-
-        if (requestInfo.accepts.any(x => x === "text/html")) {
+        const accepts = request.accepts();
+        if (accepts.any(x => x === "text/html")) {
             fs.readFile("www/index.html", (err: NodeJS.ErrnoException | null, data: Buffer) => {
                 if (err) {
                     throw new NotFoundError();

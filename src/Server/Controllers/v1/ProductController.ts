@@ -1,9 +1,9 @@
-import {NextFunction, Request, Response} from "express";
+import {Request, Response} from "express";
 import ProductService from "@services/ProductService";
 import JsonResponse from "@shared/JsonResponse";
 import UserError from "@errors/UserError";
 import {StatusCodes} from "http-status-codes";
-import {ControllerRoute, ApiRoute} from "@controllers/ApiDecorator";
+import {ApiRoute, ControllerRoute} from "@controllers/ApiDecorator";
 import ControllerBase from "@controllers/ControllerBase";
 import {HttpMethod} from "@shared/HttpMethod";
 
@@ -20,7 +20,7 @@ export default class ProductController extends ControllerBase {
         const products = await ProductController.productService.getProductList();
         response
             .status(StatusCodes.OK)
-            .json(products);
+            .json(new JsonResponse(StatusCodes.OK, null, JSON.stringify(products)));
     }
 
     @ApiRoute("/:id", HttpMethod.GET)

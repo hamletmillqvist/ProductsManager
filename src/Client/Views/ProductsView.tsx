@@ -1,16 +1,13 @@
 import {useEffect, useState} from "react";
-import {getUrlParam, updateUrlParam} from "../UrlUtil";
-import IProductModel from "@models/IProductModel";
+import {getUrlParam, updateUrlParam} from "../Utils/UrlUtil";
+import ProductModel from "@models/ProductModel";
 import SearchInput from "../Components/SearchInput";
+import ProductApi from "../ApiHelpers/ProductApi";
 
 const ProductsView = () => {
 
-    const [searchTerm, setSearchTerm] = useState<string>("");
-    const [products, setProducts] = useState<IProductModel[] | null>(null);
-
-    useEffect(() => {
-        setSearchTerm(getUrlParam("search") ?? "");
-    }, []);
+    const [searchTerm, setSearchTerm] = useState<string>(getUrlParam("search") ?? "");
+    const [products, setProducts] = useState<ProductModel[] | null>(null);
 
     const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -21,9 +18,13 @@ const ProductsView = () => {
     }
 
     const load = async () => {
-        // const result = await ProductController.getProducts();
-        // setProducts(result)
+        const result = await ProductApi.getProducts(searchTerm);
+        setProducts(result)
     };
+
+    useEffect(() => {
+        load();
+    }, []);
 
     return <div>
         <form onSubmit={e => onSubmit(e)} style={{minWidth: 120}}>
