@@ -14,7 +14,7 @@ export default function App() {
                 <Routes>
                     <Route path="/">
                         <Route index element={<HomeView/>}/>
-                        <Route path="/Products" element={<ProductsView/>}/>
+                        <Route path="/Products/*" element={<ProductsView/>}/>
                     </Route>
                 </Routes>
             </div>

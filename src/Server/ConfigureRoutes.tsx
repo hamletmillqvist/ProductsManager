@@ -7,6 +7,8 @@ import ProductController from "@controllers/v1/ProductController";
 import NotFoundError from "../Shared/Errors/NotFoundError";
 import ControllerBase from "@controllers/ControllerBase";
 import {HttpMethod} from "@shared/HttpMethod";
+import "@shared/Extentions/ArrayExtentions"
+import {redirect} from "react-router-dom";
 
 function registerApiRoute(router: Router, func: Function) {
     // @ts-ignore
@@ -60,6 +62,23 @@ function registerController(app: Express, controller: ControllerBase) {
     app.use(controllerRoute, router);
 }
 
+function sendServerErrorJsonResponse(error: ServerErrorBase, request: Request, response: Response) {
+    const decodedUrl = decodeURI(request.url);
+    const jsonResponse = error.toJsonResponse(decodedUrl);
+    console.error(jsonResponse);
+
+    response
+        .status(error.statusCode)
+        .json(jsonResponse);
+}
+
+function sendUnknownErrorJsonResponse(error: Error, request: Request, response: Response) {
+    console.error(error);
+    response
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json(new JsonResponse(StatusCodes.INTERNAL_SERVER_ERROR));
+}
+
 const ConfigureRoutes = (app: Express) => {
 
     registerController(app, ProductController);
@@ -68,31 +87,43 @@ const ConfigureRoutes = (app: Express) => {
         next(new NotFoundError());
     });
 
+    app.use((request: Request, response: Response) => {
+        const requestInfo = {
+            url: request.url,
+            body: request.body,
+            accepts: request.accepts(),
+            params: request.params,
+            query: request.query,
+        };
+
+        console.log(`Request from ${request.ip} ${JSON.stringify(requestInfo)}`);
+
+        // Since we've already passed through the static-middleware, we KNOW that the file is not in /www/
+        // Therefore, we navigate to the index.html file and interpret the requests as a path in the Spa react router
+
+        if (requestInfo.accepts.any(x => x === "text/html")) {
+            fs.readFile("www/index.html", (err: NodeJS.ErrnoException | null, data: Buffer) => {
+                if (err) {
+                    throw new NotFoundError();
+                }
+
+                response.write(data);
+                response.end();
+            });
+        }
+    });
+
+    app.use((_request: Request, _response: Response) => {
+        throw new NotFoundError();
+    });
+
     app.use((error: Error, request: Request, response: Response, next: NextFunction) => {
         if (error instanceof ServerErrorBase) {
-            response
-                .status(error.statusCode)
-                .json(error.toJsonResponse());
-
+            sendServerErrorJsonResponse(error, request, response);
             return;
         }
 
-        response
-            .status(StatusCodes.INTERNAL_SERVER_ERROR)
-            .json(new JsonResponse(StatusCodes.INTERNAL_SERVER_ERROR, error.message));
-    });
-
-    app.use((request: Request, response: Response) => {
-        console.log("Request from", request.ip);
-        fs.readFile("www/index.html", (err: NodeJS.ErrnoException | null, data: Buffer) => {
-            if (err) {
-                console.error("Failed to read index.html");
-                return;
-            }
-
-            response.write(data);
-            response.end();
-        });
+        sendUnknownErrorJsonResponse(error, request, response);
     });
 }
 

@@ -5,6 +5,7 @@ export default class JsonResponse {
     public readonly reasonPhrase: string;
     public readonly message: string | null;
     public readonly jsonBody: string | null;
+    public url: string | null = null;
 
     constructor(code: StatusCodes, message?: string | null, body?: string | null) {
         this.code = code;
