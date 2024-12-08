@@ -1,16 +1,16 @@
 import IProductModel from "@models/IProductModel";
-import ProductRepository from "../Repositories/ProductRepository";
+import {Product} from "@entities/Product";
+import NotFoundError from "@errors/NotFoundError";
 
 export default class ProductService {
 
-    private productRepository = new ProductRepository();
-
-    async GetProductList(searchTerm: string | null): Promise<IProductModel[]> {
+    async getProductList(searchTerm?: string | null): Promise<IProductModel[]> {
         return [];
     }
 
-    async GetProduct(id: number): Promise<IProductModel | null> {
-        const product = await this.productRepository.Get(id);
+    async getProduct(id: number): Promise<IProductModel | null> {
+        throw new NotFoundError("Could not find Product with id: " + id);
+        const product = new Product(); // todo
         return {
             id: product.id,
             name: product.name,

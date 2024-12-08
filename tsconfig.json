@@ -22,6 +22,21 @@
       ],
       "@routers/*": [
         "./src/Server/ApiRouters/*"
+      ],
+      "@controllers/*": [
+        "./src/Server/Controllers/*"
+      ],
+      "@services/*": [
+        "./src/Server/Services/*"
+      ],
+      "@errors/*": [
+        "./src/Shared/Errors/*"
+      ],
+      "@repositories/*": [
+        "./src/Server/Repositories/*"
+      ],
+      "@entities/*": [
+        "./src/Server/Entities/*"
       ]
     }
   }

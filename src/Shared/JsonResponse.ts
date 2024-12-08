@@ -9,7 +9,7 @@ export default class JsonResponse {
     constructor(code: StatusCodes, message?: string | null, body?: string | null) {
         this.code = code;
         this.reasonPhrase = getReasonPhrase(this.code);
-        this.message = message ?? this.reasonPhrase;
+        this.message = message ?? null;
         this.jsonBody = body ?? null;
     }
 
