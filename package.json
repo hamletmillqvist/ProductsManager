@@ -4,6 +4,7 @@
   "main": "dist/Server/Server.js",
   "type": "module",
   "scripts": {
+    "launchMariaDB": "sudo systemctl start mariadb",
     "compile": "npx sass ./www && tsc --build --clean && tsc",
     "build:client": "esbuild src/Client/Index.tsx --bundle --sourcemap --minify --outfile=www/bundle.js --loader:.ts=tsx",
     "dev": "nodemon",
